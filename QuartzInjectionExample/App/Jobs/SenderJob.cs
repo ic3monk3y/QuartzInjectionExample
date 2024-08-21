@@ -4,6 +4,8 @@ using QuartzInjectionExample.App.Interface;
 using QuartzInjectionExample.App.Repositories;
 using QuartzInjectionExample.App.Services;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using QuartzInjectionExample.Models;
 
 namespace QuartzInjectionExample.App.Jobs
 {
@@ -11,21 +13,26 @@ namespace QuartzInjectionExample.App.Jobs
     {
         private readonly ISender _sender;
         private CustomerService customerService;
+        private CustomerRepository repository;
+        //private MySQLConnection connection;
+        private OracleConnection connection;
         private string message;
+        private List<Customer> customers;
+        
 
         public SenderJob(ISender sender)
         {
             _sender = sender;
 
-            var connection = new MySQLConnection();
-            //var connection = new OracleConnection();
-            var repository = new CustomerRepository(connection);
+            //connection = new MySQLConnection();
+            connection = new OracleConnection();
+            repository = new CustomerRepository(connection);
             customerService = new CustomerService(repository);
         }
 
         public Task Execute(IJobExecutionContext context)
         {
-            var customers = customerService.GetCustomers();
+            customers = customerService.GetCustomers();
 
             foreach (var customer in customers)
             {
